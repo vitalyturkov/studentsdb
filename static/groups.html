@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Сервіс Обліку Студентів</title>
+		<meta name="description"
+		value="Система Обліку Студентів Навчального Закладу" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Include Styles -->
+		<link rel="stylesheet"
+			href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">
+		<link rel="stylesheet"
+			href="./css/main.css">
+	</head>
+
+	<body>
+		<!-- Start container -->
+		<div class="container">
+		
+			<!-- Start Header -->
+			<div class="row" id="header">
+				<div class="col-xs-8">
+					<h1>Сервіс Обліку Студентів</h1>
+				</div>
+				<div class="col-xs-4" id="group-selector">
+					<strong>Група:</strong>
+					<select>
+						<option value="">Усі Cтуденти</option>
+						<option value="">ДП-22, Superman</option>
+						<option value="">ДП-22, Batman</option>
+						<option value="">ДП-22, Joker</option>
+					</select>
+				</div>
+			</div>
+			<!-- End Header -->
+
+			<!-- Start sub-header -->
+			<div class="row" id="sub-header">
+				<div class="col-xs-12">
+					<ul class="nav nav-tabs" role="tablist">
+					  <li role="presentation"><a href="./index.html">Студенти</a></li>
+					  <li role="presentation"><a href="./visiting.html">Відвідування</a></li>
+					  <li role="presentation" class="active"><a href="#">Групи</a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- End sub-header -->
+
+			<!-- Start content-columns -->
+			<div class="row" id="content-columns">
+				<div class="col-xs-12" id="content-column">
+					<h2>Групи</h2>
+					<a href="./add_gr.html" class="btn btn-primary">Додати Групу</a>
+
+					<!-- Start student listing -->
+					<table class="table">
+						<thead>
+							<tr>
+								<th><a href="#">#</a></th>
+								<th><a href="#">Назва&uarr;</a></th>
+								<th><a href="#">Староста</a></th>
+								<th>Дії</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+							<td>1</td>
+								<td><a href="#">ДП-21</a></td>
+								<td><a href="#">Селіна Кайл</a></td>
+								<td>
+										<div class="btn-group">
+										  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										    Дія <span class="caret"></span>
+										  </button>
+										  <ul class="dropdown-menu">
+										    <li><a href="#">Редагувати</a></li>
+										    <li><a href="#">Відвідування</a></li>
+										    <li><a href="#">Видалити</a></li>
+										  </ul>
+										</div>
+									</td>
+								
+							</tr>
+							<tr>
+								<td>2</td>
+								<td><a href="#">ДП-22</a></td>
+								<td><a href="#">Брюс Уейн</a></td>
+								<td>
+										<div class="btn-group">
+										  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										    Дія <span class="caret"></span>
+										  </button>
+										  <ul class="dropdown-menu">
+										    <li><a href="#">Редагувати</a></li>
+										    <li><a href="#">Відвідування</a></li>
+										    <li><a href="#">Видалити</a></li>
+										  </ul>
+										</div>
+									</td>
+							</tr>
+							<tr>
+								<td>3</td>
+								<td><a href="#">ДП-23</a></td>
+								<td><a href="#">Пітер Паркер</a></td>
+								<td>
+										<div class="btn-group">
+										  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										    Дія <span class="caret"></span>
+										  </button>
+										  <ul class="dropdown-menu">
+										    <li><a href="#">Редагувати</a></li>
+										    <li><a href="#">Відвідування</a></li>
+										    <li><a href="#">Видалити</a></li>
+										  </ul>
+										</div>
+									</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- End student listing -->
+					<nav>
+					  <ul class="pagination">
+					    <li class="disabled">
+					    </li>
+					    <li ><a href="#" id="active-button">1</a></li>
+					    <li><a href="#">2</a></li>
+					    <li>
+					      <a href="#" aria-label="Next">
+					        <span aria-hidden="true">Далі</span>
+					      </a>
+					    </li>
+					  </ul>
+					</nav>
+				</div>
+			</div>
+			<!-- End content-columns -->
+
+			<!-- Start Footer -->
+			<div class="row" id="footer">
+				<div class="col-xs-12">
+					&copy; 2015 Сервіс Бази Даних
+				</div>
+			</div>
+			<!-- End Footer -->
+		</div>
+			<!-- End container -->
+		<!-- Javascripts Section -->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+		<script src="https://cdn.jsdelivr.net/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	</body>
+</html>
