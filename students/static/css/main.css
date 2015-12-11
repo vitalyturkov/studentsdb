@@ -1,0 +1,55 @@
+/* Global styles */
+.alert {
+		margin: 10px 0px 0px 5px;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: bold;
+}
+
+/* Group selector */
+#group-selector {
+	margin-top: 30px;
+}
+#group-selector select {
+	height: 30px;
+	border-color: #cccccc;
+	width: 80%;
+	background-color: white;
+}
+
+/* Footer styles*/
+#footer {
+	border-top: 1px solid #ddd;
+	padding-top: 10px;
+}
+
+/* Navbar styles*/
+#active-button {
+	color: #C0C0C0;
+}
+
+/* header month */
+#month {
+	font-weight: bold;
+	text-align: center;
+}
+/* Text for add data*/
+#form {
+	text-align: right;
+}
+/*Group at add form */
+#add-group {
+	margin: 0 15px 0 15px;
+	width: 22.5%;
+	padding-left: 2px;
+}
+/* Buttons at form styles*/
+#buttons {
+	border-top: 1px solid #ddd;
+	padding: 15px 0 5px 0;
+	text-align: left;
+	background-color: #F0F0F0  ;
+}
+#save {
+	margin-right: 15px;
+}
