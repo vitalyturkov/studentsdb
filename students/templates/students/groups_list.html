@@ -44,17 +44,5 @@
 	<p>Нажаль, база груп пуста </p>
 	{% endif %}
 	<!-- End student listing -->
-	<nav>
-	  <ul class="pagination">
-	    <li class="disabled">
-	    </li>
-	    <li ><a href="#" id="active-button">1</a></li>
-	    <li><a href="#">2</a></li>
-	    <li>
-	      <a href="#" aria-label="Next">
-	        <span aria-hidden="true">Далі</span>
-	      </a>
-	    </li>
-	  </ul>
-	</nav>
+	{% include "students/bar/bar.html" %}
 {% endblock content %}

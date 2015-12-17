@@ -8,12 +8,12 @@ def groups_list(request):
 	{'id': 1,
 	 'name': u'ДП-21',
 	 'leader': {'id': 1, 'name': u'Селіна Кайл'}},
-  	{'id': 2,
-         'name': u'ДП-22',
-         'leader': {'id': 2, 'name': u'Брюс Уейн'}},
-  	{'id': 3,
-         'name': 'ДП-23',
-         'leader': {'id': 3, 'name': u'Пітер Паркер'}},
+  {'id': 2,
+   'name': u'ДП-22',
+   'leader': {'id': 2, 'name': u'Брюс Уейн'}},
+  {'id': 3,
+   'name': 'ДП-23',
+   'leader': {'id': 3, 'name': u'Пітер Паркер'}},
 )
 
    return render(request, 'students/groups_list.html', {'groups':groups})
