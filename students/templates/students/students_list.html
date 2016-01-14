@@ -41,7 +41,6 @@
 			{% for student in students %}
 			<tr>
 				<td>{{forloop.counter}}</td>
-				
 				<td>
 				{% if student.photo %}
 				<img src="{{ student.photo.url }}" width="30px" height="30px" class="img-circle">

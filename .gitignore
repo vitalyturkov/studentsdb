@@ -3,3 +3,4 @@
 *.egg-info
 *∼
 *.mo
+db.py
