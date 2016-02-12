@@ -3,19 +3,20 @@
 
 {% block meta_tittle %}Список груп{% endblock meta_tittle %}
 {% block tittle %}Групи{% endblock tittle %}
+
 {% block content %}
 
-	<a href="{% url "groups_add" %}" class="btn btn-primary">Додати Групу</a>
+	<a href="#" class="btn btn-primary">Додати Групу</a>
 	{% if groups %}
 	<!-- Start student listing -->
 	<table class="table">
 		{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
 		<thead>
 			<tr>
-				<th><a href="#">#</a></th>
+				<th>#</th>
 				<th><a href="{% url 'groups' %}?order_by=tittle{% if order_by == 'tittle' and reverse != '1' %}&amp;reverse=1{% endif %}">
 					Назва
-					{% if order_by == 'tittle' and reverse != '1' or order_by == '' %}&uarr;
+					{% if order_by == 'tittle' and reverse != '1' %}&uarr;
 					{% elif order_by == 'tittle' and reverse == '1' %}&darr;
 					{% endif %}</a>
 				</th>
@@ -32,7 +33,9 @@
 		<tbody>
 			{% for group in groups %}
 			<tr>
-			<td>{{forloop.counter}}</td>
+			<td>{% for num in numbs %}{% if forloop.counter == forloop.parentloop.counter %}
+				{{num}}
+				{% endif %}{% endfor %}</td>
 				<td><a href="{% url "groups_edit" group.id %}">{{ group.tittle }}</a></td>
 				<td>{% if group.leader %}<a href="{% url "students_edit" group.leader.id %}">{{ group.leader }}</a>{% endif %}</td>
 				<td>

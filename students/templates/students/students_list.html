@@ -9,15 +9,16 @@
 
 	{% if students %}
 	<!-- Start student listing -->
+
 	<table class="table">
 		{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
 		<thead>
 			<tr>
-				<th><a href="#">#</a></th>
+				<th>#</th>
 				<th>Фото</th>
 				<th><a href="{% url 'home' %}?order_by=last_name{% if order_by == 'last_name' and reverse != '1' %}&amp;reverse=1{% endif %}">
 					Прізвище
-					{% if order_by == 'last_name' and reverse != '1' or order_by == '' %}&uarr;
+					{% if order_by == 'last_name' and reverse != '1' %}&uarr;
 					{% elif order_by == 'last_name' and reverse == '1' %}&darr;
 					{% endif %}</a>
 				</th>
@@ -40,7 +41,9 @@
 		<tbody>
 			{% for student in students %}
 			<tr>
-				<td>{{forloop.counter}}</td>
+				<td>{% for num in numbs %}{% if forloop.counter == forloop.parentloop.counter %}
+				{{num}}
+				{% endif %}{% endfor %}</td>
 				<td>
 				{% if student.photo %}
 				<img src="{{ student.photo.url }}" width="30px" height="30px" class="img-circle">
@@ -72,7 +75,12 @@
 		<p>Нажаль, база студентів пуста </p>
 	{% endif %}
 	<!-- End student listing -->
+	
+	<!--<a href="{% url 'home' %}?loadmore={{ numb }}"><button id="loadmore" > Загрузить еще </button></a>-->
+
 	<!-- Navigations -->
+	
+
 	{% if students.has_other_pages %}
 	{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
 	<nav>
@@ -94,4 +102,28 @@
 	{% endwith %}
 	{% endif %}
 	<!-- Navigations -->
+
+
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			var loadmore = 1;
+			$('#loadmore').click(function(){
+				loadmore++;	
+				console.log(loadmore);
+			});
+
+			$(window).scroll(function() {
+			var height = $(window).height();
+			var scroll = $(window).scrollTop();
+			var docum = $(document).height();
+
+			if (docum > height) {
+				var s = 1;
+			}
+			console.log(height + " " + scroll + " " + docum);
+			});
+		});
+		
+	</script>
 {% endblock content %}

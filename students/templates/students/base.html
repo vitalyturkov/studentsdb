@@ -10,6 +10,7 @@
 
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- Include Styles -->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.js"></script>
 		<link rel="stylesheet"
 			href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">
 		<link rel="stylesheet"
@@ -44,6 +45,7 @@
 						  <li role="presentation" {% if request.path == "/"  %}class="active"{% endif %}><a href="{% url "home" %}">Студенти</a></li>
 						  <li role="presentation" {% if "/journal" in request.path %}class="active"{% endif %}><a href="{% url "journal" %}">Відвідування</a></li>
 						  <li role="presentation" {% if "/groups" in request.path %}class="active"{% endif %}><a href="{% url "groups" %}">Групи</a></li>
+						  <li role="presentation" {% "/exams" in request.path  %}class="active"{% endif %}><a href="{% url "exams" %}">Іспити</a></li>
 						</ul>
 					</div>
 				</div>

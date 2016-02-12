@@ -18,7 +18,7 @@ from django.conf.urls import url, include, patterns
 from django.contrib import admin
 from .settings import MEDIA_ROOT, DEBUG
 
-urlpatterns =[
+urlpatterns = [
 	#students urls
     url(r'^$', 'students.views.students.students_list', name='home'),
     url(r'^students/add/$', 'students.views.students.students_add',
@@ -36,8 +36,16 @@ urlpatterns =[
     url(r'^groups/(?P<gid>\d+)/delete/$','students.views.groups.groups_delete',
 	name='groups_delete'),
 	
-     #journal urls
+    #journal urls
     url(r'^journal/$', 'students.views.journal.journal', name='journal'),
+
+    #exams
+    url(r'^exams/$', 'students.views.exams.exams_list', name='exams'),
+    url(r'^exams/add/$', 'students.views.exams.exams_add', name='exams_add'),
+    url(r'^exams/(?P<eid>\d+)/edit/$','students.views.exams.exams_edit',
+    name='exams_edit'),
+    url(r'^exams/(?P<eid>\d+)/delete/$','students.views.exams.exams_delete',
+    name='exams_delete'),
 
 
     url(r'^admin/', include(admin.site.urls)),
@@ -46,10 +54,10 @@ urlpatterns =[
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': MEDIA_ROOT})
 ]
-"""
+
+
 if DEBUG:
-    #serve files from media folder
-    urlpatterns += urlpatterns[
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': MEDIA_ROOT})]
-"""
+# serve files from media folder
+    urlpatterns += patterns('',
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+    'document_root': MEDIA_ROOT}))
