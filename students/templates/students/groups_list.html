@@ -37,7 +37,7 @@
 				{{num}}
 				{% endif %}{% endfor %}</td>
 				<td><a href="{% url "groups_edit" group.id %}">{{ group.tittle }}</a></td>
-				<td>{% if group.leader %}<a href="{% url "students_edit" group.leader.id %}">{{ group.leader }}</a>{% endif %}</td>
+				<td>{% if group.leader %}<a href="{% url "students_edit" group.leader.id %}">{{ group.leader }}</a>{% else %}Немає{% endif %}</td>
 				<td>
 						<div class="btn-group">
 						  <button type="button" class="btn btn-default dropdown-toggle"

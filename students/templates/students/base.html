@@ -42,10 +42,10 @@
 				<div class="row" id="sub-header">
 					<div class="col-xs-12">
 						<ul class="nav nav-tabs" role="tablist">
-						  <li role="presentation" {% if request.path == "/"  %}class="active"{% endif %}><a href="{% url "home" %}">Студенти</a></li>
+						  <li role="presentation" {% if request.path == "/" or "/students" in request.path  %}class="active"{% endif %}><a href="{% url "home" %}">Студенти</a></li>
 						  <li role="presentation" {% if "/journal" in request.path %}class="active"{% endif %}><a href="{% url "journal" %}">Відвідування</a></li>
 						  <li role="presentation" {% if "/groups" in request.path %}class="active"{% endif %}><a href="{% url "groups" %}">Групи</a></li>
-						  <li role="presentation" {% "/exams" in request.path  %}class="active"{% endif %}><a href="{% url "exams" %}">Іспити</a></li>
+						  <li role="presentation" {% if "/exams" in request.path %}class="active"{% endif %}><a href="{% url "exams" %}">Іспити</a></li>
 						</ul>
 					</div>
 				</div>
@@ -55,8 +55,13 @@
 				<div class="row" id="content-columns">
 					<div class="col-xs-12" id="content-column">
 						<h2>{% block tittle %}{% endblock tittle %}</h2>
-						<!--<div class="alert alert-warning" role="alert">Студент успішно доданий</div>	-->
-
+						{% if messages %}
+						    {% for message in messages %}
+						    <div class="alert alert-{{message.tags}}" role="alert">{{ message }}</div
+						    {% endfor %}
+						</ul>
+						{% endif %}
+						
 						{% block content %}{% endblock content %}
 
 					</div>

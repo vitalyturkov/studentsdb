@@ -57,3 +57,13 @@ h1, h2, h3, h4, h5, h6 {
 #foter {
 	text-decoration:none;
 }
+
+/*help massage at add form*/
+.help-block {
+	display: inline-block;
+}
+
+/* Form Styles */
+textarea, select, input {
+	max-width: 300px;
+}

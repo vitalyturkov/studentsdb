@@ -15,9 +15,6 @@ def exams_list(request):
 		if request.GET.get('reverse', '') == '1':
 			exams = exams.reverse()
 
-
-
-
 	n = 3	
 	paginator = Paginator(exams, n)
 	page = request.GET.get('page', '1')
@@ -30,13 +27,9 @@ def exams_list(request):
 		# If page is out of range (e.g. 9999), deliver last page of results.
 		exams = paginator.page(paginator.num_pages)
 
-
 	numbs=[]
 	for i in range(n):
 		numbs.append((int(page)-1)*n+i+1)
-
-
-
 
 	return render(request, 'students/exams_list.html', {'exams': exams, 'numbs':numbs})
 
