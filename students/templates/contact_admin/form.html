@@ -1,0 +1,17 @@
+{% extends "students/base.html" %}
+{% load static from staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block meta_tittle %}Зв'язок із адміністратором{% endblock meta_tittle %}
+{% block tittle %}Зв'язок із адміністратором{% endblock tittle %}
+
+
+
+{% block content %}
+
+
+{% crispy form %}
+{{ field.errors }}
+	
+
+{% endblock content %}

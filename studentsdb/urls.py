@@ -16,22 +16,27 @@ Including another URLconf
 """
 from django.conf.urls import url, include, patterns
 from django.contrib import admin
+from students.views.contact_admin import ContactView
+from students.views.students import StudentUpdateView
+from students.views.groups import GroupCreateView, GroupUpdateView
 from .settings import MEDIA_ROOT, DEBUG
+
+
 
 urlpatterns = [
 	#students urls
     url(r'^$', 'students.views.students.students_list', name='home'),
     url(r'^students/add/$', 'students.views.students.students_add',
 	name='students_add'),
-    url(r'^students/(?P<sid>\d+)/edit/$','students.views.students.students_edit',
+    url(r'^students/(?P<pk>\d+)/edit/$', StudentUpdateView.as_view(),
 	name='students_edit'),
     url(r'^students/(?P<sid>\d+)/delete/$','students.views.students.students_delete',
 	name='students_delete'),
 	
 	#groups urls
     url(r'^groups/$', 'students.views.groups.groups_list', name='groups'),  
-    url(r'^groups/add/$', 'students.views.groups.groups_add', name='groups_add'),
-    url(r'^groups/(?P<gid>\d+)/edit/$','students.views.groups.groups_edit',
+    url(r'^groups/add/$', GroupCreateView.as_view(), name='groups_add'),
+    url(r'^groups/(?P<pk>\d+)/edit/$',GroupUpdateView.as_view(),
 	name='groups_edit'),
     url(r'^groups/(?P<gid>\d+)/delete/$','students.views.groups.groups_delete',
 	name='groups_delete'),
@@ -47,9 +52,11 @@ urlpatterns = [
     url(r'^exams/(?P<eid>\d+)/delete/$','students.views.exams.exams_delete',
     name='exams_delete'),
 
+    #contact Admin Form
+    url(r'^contact-admin/$', ContactView.as_view(), name='contact_admin'),
 
     url(r'^admin/', include(admin.site.urls)),
-
+  
 
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': MEDIA_ROOT})

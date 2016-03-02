@@ -6,7 +6,7 @@
 
 {% block content %}
 
-	<a href="#" class="btn btn-primary">Додати Групу</a>
+	<a href="{% url "groups_add" %}" class="btn btn-primary">Додати Групу</a>
 	{% if groups %}
 	<!-- Start student listing -->
 	<table class="table">

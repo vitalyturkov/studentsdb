@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-from datetime import datetime
+from django.views.generic import UpdateView
+from django.forms import ModelForm
+
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from crispy_forms.bootstrap import FormActions
+
 import re
 
 from ..models.students import Student
@@ -123,7 +131,6 @@ def students_add(request):
 				student.save()
 				# redirect to students list
 
-				
 				#return HttpResponseRedirect(u'%s?status_message=Студент %s %s успішно доданий!' %(reverse('home'), student.first_name, student.last_name))
 				messages.success(request, u'Студент %s %s успішно доданий!' %(student.first_name, student.last_name))
 				return HttpResponseRedirect(reverse('home'))
@@ -137,7 +144,6 @@ def students_add(request):
 
 		elif request.POST.get('cancel_button') is not None:
 			# redirect to home page on cancel button
-			#massage=messages.add_message(request, messages.INFO, 'Hello world.')
 			messages.info(request, u'Додавання студента скасовано!')
 			#return HttpResponseRedirect(u'%s?status_message=Додавання студента скасовано!' % reverse('home'))
 			return HttpResponseRedirect(reverse('home'))
@@ -147,13 +153,68 @@ def students_add(request):
 			{'groups': Group.objects.all().order_by('tittle')})
 
 
+class StudentUpdateForm(ModelForm):
+	class Meta:
+		model = Student
+		fields = ['first_name', 'last_name', 'middle_name', 'birthday', 'photo', 'ticket', 'student_group', 'notes']
+	def __init__(self, *args, **kwargs):
+	# call original initializator
+		super(StudentUpdateForm, self).__init__(*args, **kwargs)
+		# this helper object allows us to customize form
+		self.helper = FormHelper(self)
+		# form tag attributes
+		
+		#self.helper.form_action = reverse_lazy('students_edit', kwargs={'pk': kwargs['instance'].id})
+		self.helper.form_method = 'POST'
+		self.helper.form_class = 'form-horizontal'
+		# set form field properties
+		self.helper.help_text_inline = True
+		#self.helper.html5_required = True
+		self.helper.label_class = 'col-sm-2 control-label'
+		self.helper.field_class = 'col-sm-10'
+		# add buttons
+		self.helper.add_input(Submit('add_button', u'Зберегти', css_class="btn btn-primary"))
+		self.helper.add_input(Submit('cancel_button', u'Скасувати', css_class="btn btn-link"))
+		#self.helper.layout[-1] = FormActions(
+		#Submit('add_button', u'Зберегти', css_class="btn btn-primary"),
+		#Submit('cancel_button', u'Скасувати', css_class="btn btn-link"),)
 
-
-
+		"""
+		self.helper.form_class = 'form-horizontal'
+		self.helper.form_method = 'post'
+		self.helper.form_action = reverse('home')
+		# twitter bootstrap styles
+		self.helper.help_text_inline = True
+		self.helper.html5_required = True
+		self.helper.label_class = 'col-sm-2 control-label'
+		self.helper.field_class = 'col-sm-10'
+		# form buttons
+		self.helper.add_input(Submit('send_button', u'Надіслати'))
+		"""
 	
 
-def students_edit(request, sid):
-	return HttpResponse('<h1>Edit Student %s</h1>' % sid)
+class StudentUpdateView(UpdateView):
+	model = Student
+	template_name = 'students/students_edit.html'
+	form_class = StudentUpdateForm
+
+	def get_success_url(self):
+		return reverse('home')
+
+	def post(self, request, *args, **kwargs):
+		if request.POST.get('cancel_button'):
+			messages.info(request, u'Редагування студента скасовано!')
+			return HttpResponseRedirect(reverse('home'))
+		else:
+			if StudentUpdateForm(request.POST).is_valid():
+				messages.success(request, u'Редагування студента пройшло успішно!')
+			else:
+				messages.warning(request, u'Будь-ласка, виправте наступні помилки!')
+
+			return super(StudentUpdateView, self).post(request, *args, **kwargs)
+		
+			
+
 
 def students_delete(request, sid):
 	return HttpResponse('<h1>Delete Student %s</h1>' % sid)

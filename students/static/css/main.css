@@ -1,6 +1,6 @@
 /* Global styles */
 .alert {
-		margin: 10px 0px 0px 5px;
+	margin: 10px 0px 10px 5px;
 }
 h1, h2, h3, h4, h5, h6 {
 	font-weight: bold;
@@ -59,9 +59,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /*help massage at add form*/
-.help-block {
-	display: inline-block;
-}
+
 
 /* Form Styles */
 textarea, select, input {
