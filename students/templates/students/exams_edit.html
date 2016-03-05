@@ -1,0 +1,83 @@
+{% extends "students/base.html" %}
+{% load static from staticfiles %}
+
+{% block meta_tittle %}Редагувати іспит{% endblock meta_tittle %}
+{% block tittle %}Редагувати іспит{% endblock tittle %}
+
+{% block content %}
+
+	<form action="{% url "exams_edit" current_exam.id %}" method="post"
+		enctype="multipart/form-data" role="form" 
+		class="form-horizontal">
+		{% csrf_token %}
+
+		<div class="form-group {% if errors.tittle %}has-error{% endif%}">
+			<label for="tittle" class="col-sm-2 control-label">Назва предмету*</label>
+			<div class="col-sm-10">
+				<input type="text" value="{% if request.POST.tittle %}{{ request.POST.tittle }}{% else %}{{ current_exam.tittle }}{% endif %}"
+					name="tittle" id="tittle"
+					class="form-control" 
+					placeholder="Введіть назву предмету" />
+				<span class="help-block">{{ errors.tittle }}</span>
+			</div>
+		</div>
+
+		<div class="form-group {% if errors.examtime %}has-error{% endif %}">
+			<label for="examtime" class="col-sm-2 control-label">Дата і час іспиту*</label>
+			<div class="col-sm-10">
+				<input type="text" value="{% if request.POST.examtime %}{{ request.POST.examtime }}{% else %}{{ date }}{% endif %}"
+					name="examtime" id="examtime"
+					class="form-control"
+					placeholder="Наприклад 2015-12-30" />
+				<span class="help-block">{{ errors.examtime }}</span>
+			</div>
+		</div>
+
+		<div class="form-group {% if errors.teach %}has-error{% endif %}">
+			<label for="teach" class="col-sm-2 control-label">Викладач*</label>
+			<div class="col-sm-10">
+				<input type="text" value="{% if request.POST.teach %}{{ request.POST.teach }}{% else %}{{ current_exam.teach }}{% endif %}"
+					name="teach" id="teach"
+					class="form-control"
+					placeholder="Введіть викладача" />
+				<span class="help-block">{{ errors.teach }}</span>
+			</div>		
+		</div>
+
+		<div class="form-group {% if errors.exam_group %}has-error{% endif %}">
+			<label for="exam_group" class="col-sm-2 control-label">Група*</label>
+			<div class="col-sm-10">
+				<select name="exam_group" id="exam_group">
+				<option value="">Оберіть групу</option>
+				{% for group in groups %}
+				<option value="{{group.id}}" 
+				{% if request.POST.exam_group %}
+				{% if group.id == request.POST.exam_group|add:0 %}selected= "1"{% endif %}>{{ group.tittle }}</option>
+				{% else %}
+				{% if group.id == current_exam.exam_group.id %}selected= "1"{% endif %}>{{ group.tittle }}</option>
+				{% endif %}
+				{% endfor %}
+				</select>
+				<span class="help-block">{{ errors.exam_group }}</span>
+			</div>
+		</div>
+
+		<div class="form-group {% if errors.notes %}has-error{% endif %}">
+			<label for="notes" class="col-sm-2 control-label">Додаткові Нотатки</label>
+			<div class="col-sm-10">
+				<textarea name="notes" id="notes" class="form-control">{% if request.POST.notes %}{{ request.POST.notes }}{% else %}{{ current_exam.notes }}{% endif %}</textarea>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label"></label>
+			<div class="col-sm-10">	
+				<input type="submit" value="Додати" name="add_button" class="btn btn-primary"/>
+				<button type="submit" name="cancel_button"
+				class="btn btn-link">Скасувати</button>
+			</div>
+		</div>
+	</form>
+
+
+{% endblock content %}

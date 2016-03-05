@@ -1,0 +1,14 @@
+{% extends "students/base.html" %}
+{% load static from staticfiles %}
+{% block meta_title %}Видалити Екзамен{% endblock meta_title %}
+{% block title %}Видалити Екзамен{% endblock title %}
+{% block content %}
+	<form action="{% url "exams_delete" current_exam.id %}" method="post">
+		{% csrf_token %}
+		<p>Ви дійсно хочете видалити іспит "{{ current_exam.tittle }}"?</p>
+		<input type="submit" value="Так" name="delete_button"
+			class="btn btn-danger" />
+		<input type="submit" value="Ні, повернутись назад" name="cancel_button"
+			class="btn btn-default" /><br /><br />
+	</form>
+{% endblock content %}
