@@ -58,10 +58,11 @@ h1, h2, h3, h4, h5, h6 {
 	text-decoration:none;
 }
 
-/*help massage at add form*/
-
-
 /* Form Styles */
 textarea, select, input {
 	max-width: 300px;
+}
+
+select#exam_group, select#student_group {
+    width: 100%;
 }
