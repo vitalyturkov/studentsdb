@@ -10,32 +10,32 @@ from django.contrib import messages
 from ..models.exams import Exam
 from ..models.groups import Group
 
+from ..util import paginate, get_current_group
+
 
 def exams_list(request):
-	exams = Exam.objects.all()
-	order_by = request.GET.get('order_by', 'tittle')
+	
+	current_group = get_current_group(request)
+	if current_group:
+		exams = Exam.objects.filter(exam_group=current_group)
+	else:
+		# otherwise show all students
+		exams = Exam.objects.all()
+
+	# try to order students list
+	order_by = request.GET.get('order_by', 'examtime')
 	if order_by in ('tittle', 'examtime', 'teach', 'exam_group'):
 		exams = exams.order_by(order_by)
 		if request.GET.get('reverse', '') == '1':
 			exams = exams.reverse()
 
-	n = 3	
-	paginator = Paginator(exams, n)
-	page = request.GET.get('page', '1')
-	try:
-		exams = paginator.page(page)
-	except PageNotAnInteger:
-		# If page is not an integer, deliver first page.
-		exams = paginator.page(1)
-	except EmptyPage:
-		# If page is out of range (e.g. 9999), deliver last page of results.
-		exams = paginator.page(paginator.num_pages)
+	n = 5
+	# apply pagination, 5 exams per page
+	context = paginate(exams, n, request, {},
+		var_name='exams')
+	
 
-	numbs=[]
-	for i in range(n):
-		numbs.append((int(page)-1)*n+i+1)
-
-	return render(request, 'students/exams_list.html', {'exams': exams, 'numbs':numbs})
+	return render(request, 'students/exams_list.html', context)
 
 
 def exams_add(request):
@@ -146,7 +146,6 @@ def exams_edit(request, eid):
 				return render(request, 'students/exams_edit.html',
 						{'groups': Group.objects.all().order_by('tittle'),
 							'errors': errors, 'current_exam': Exam.objects.get(id=eid)})
-
 
 		else:
 			# redirect to home page on cancel button

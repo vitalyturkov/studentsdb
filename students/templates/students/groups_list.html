@@ -33,9 +33,12 @@
 		<tbody>
 			{% for group in groups %}
 			<tr>
-			<td>{% for num in numbs %}{% if forloop.counter == forloop.parentloop.counter %}
-				{{num}}
-				{% endif %}{% endfor %}</td>
+			<td>{% if is_paginated %}
+					{{ page_obj.start_index|add:forloop.counter|add:"-1" }}
+				{% else %}
+					{{ forloop.counter }}
+				{% endif %}
+			</td>
 				<td><a href="{% url "groups_edit" group.id %}">{{ group.tittle }}</a></td>
 				<td>{% if group.leader %}<a href="{% url "students_edit" group.leader.id %}">{{ group.leader }}</a>{% else %}Немає{% endif %}</td>
 				<td>
@@ -58,28 +61,20 @@
 		</tbody>
 	</table>
 	{% else %}
-	<p>Нажаль, база груп пуста </p>
+	<div class="alert alert-warning">
+		Поки немає жодної групи в базі. Будь-ласка,
+		<a href="{% url "groups_add" %}">додайте</a> першу.
+	</div>
 	{% endif %}
 	
 	<!-- End student listing -->
-	{% if groups.has_other_pages %}
-	{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
-	<nav>
-	  <ul class="pagination">
-	    <li>
-	      <a href="{% url "groups" %}?page=1&amp;order_by={% if order_by == '' %}tittle{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">&laquo;</a>
-	    </li>
-	    {% for p in groups.paginator.page_range %}
-	    <li {% if groups.number == p %}class="active"{% endif %}>
-	      <a href="{% url "groups" %}?page={{ p }}&amp;order_by={% if order_by == '' %}tittle{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">{{ p }}</a>
-	    </li>
-	    {% endfor %}
-	    <li>
-	      <a href="{% url "groups" %}?page={{ groups.paginator.num_pages }}&amp;order_by={% if order_by == '' %}tittle{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">
-	        &raquo;</a>
-	    </li>
-	  </ul>
-	</nav>
-	{% endwith %}
-	{% endif %}
+
+	<!-- Navigations -->
+{% with object_list=groups %}
+  {% include "students/pagination.html" %}
+{% endwith %}
+
+	<!-- Navigations -->
+
+
 {% endblock content %}

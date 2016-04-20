@@ -66,3 +66,29 @@ textarea, select, input {
 select#exam_group, select#student_group {
     width: 100%;
 }
+
+/* Journal Table Styles */
+td.day-box,
+th.day-header {
+	padding: 5px !important;
+	vertical-align: middle !important;
+	text-align: center;
+}
+/*hide ajax-progress-indicator*/
+#ajax-progress-indicator {
+	display: none;
+}
+#ajax-error-indicator {
+	display: none;
+}
+
+.input-group{
+	display: block !important;
+}
+
+#examtime {
+	display: inline;
+}
+span#examtime{
+	margin-left: -3px;
+}

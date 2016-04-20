@@ -5,7 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.forms import ModelForm
+#from django.forms import ModelForm
+from django.forms import ModelForm, ValidationError
 from django.views.generic.edit import CreateView
 from django.views.generic import UpdateView
 from django.views.generic.edit import DeleteView
@@ -16,9 +17,19 @@ from crispy_forms.layout import Submit, Layout, Field
 from ..models.groups import Group
 from ..models.students import Student
 
+from ..util import paginate, get_current_group
+
+from django.http import Http404
+
 
 def groups_list(request):
-  groups = Group.objects.all()
+  current_group = get_current_group(request)
+  if current_group:
+    groups = Group.objects.filter(id=current_group.id)
+  else:
+    # otherwise show all students
+    groups = Group.objects.all()
+
   groups = groups.order_by('tittle')
   # try to order groups list
   order_by = request.GET.get('order_by', 'tittle')
@@ -28,22 +39,11 @@ def groups_list(request):
       groups = groups.reverse()
 
   n = 5
-  paginator = Paginator(groups, n)
-  page = request.GET.get('page', '1')
-  try:
-    groups = paginator.page(page)
-  except PageNotAnInteger:
-    # If page is not an integer, deliver first page.
-    groups = paginator.page(1)
-  except EmptyPage:
-    # If page is out of range (e.g. 9999), deliver last page of results.
-    groups = paginator.page(paginator.num_pages)
+  # apply pagination, 5 groups per page
+  context = paginate(groups, n, request, {},
+    var_name='groups')
 
-  numbs=[]
-  for i in range(n):
-    numbs.append((int(page)-1)*n+i+1)
-
-  return render(request, 'students/groups_list.html', {'groups':groups, 'numbs':numbs})
+  return render(request, 'students/groups_list.html', context)
 
 
 
@@ -70,6 +70,10 @@ class GroupForm(ModelForm):
       Field('leader'),
       Field('notes', placeholder=u"Додаткові нотатки")
       )
+
+    #ordering field 'student_group' at form by tittle
+    self.fields['leader'].queryset = Student.objects.order_by('last_name')
+
     # add buttons
     self.helper.add_input(Submit('add_button', u'Зберегти', css_class="btn btn-primary"))
     self.helper.add_input(Submit('cancel_button', u'Скасувати', css_class="btn btn-link"))
@@ -85,13 +89,16 @@ class GroupCreateView(CreateView):
 
   def post(self, request, *args, **kwargs):
     form = self.form_class(request.POST)
+
     if request.POST.get('cancel_button'):
       messages.info(request, u'Додавання групи скасовано!')
       return HttpResponseRedirect(reverse('groups'))
+
     elif request.POST.get('add_button'):
       if form.is_valid():
         if request.POST.get('leader'):
           messages.warning(request, u'Студент %s не може бути старостою новострореної групи, бо він належить до іншої групи!' %Student.objects.get(id=request.POST.get('leader')))
+          form.add_error('leader', 'Спочатку створіть групу без старости, а потім дадайте до неї студентів')
           return render(request, self.template_name, {'form': form})
         messages.success(request, u'Додавання групи %s пройшло успішно!' %request.POST.get('tittle'))
       else:
@@ -120,6 +127,7 @@ class GroupUpdateView(UpdateView):
         if Student.objects.get(id=request.POST.get('leader')).student_group != Group.objects.get(id=kwargs['pk']):
           messages.warning(request, u'Студент %s не належить до групи %s' 
             %(Student.objects.get(id=request.POST.get('leader')), request.POST.get('tittle')))
+          form.add_error('leader', 'Оберіть студента, який належить до даної групи')
           return render(request, self.template_name, {'form': form})
       
       if form.is_valid():

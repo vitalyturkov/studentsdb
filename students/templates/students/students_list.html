@@ -6,7 +6,6 @@
 
 {% block content %}
 	<a href="{% url "students_add" %}" class="btn btn-primary">Додати студента</a>
-
 	{% if students %}
 	<!-- Start student listing -->
 
@@ -41,9 +40,11 @@
 		<tbody>
 			{% for student in students %}
 			<tr>
-				<td>{% for num in numbs %}{% if forloop.counter == forloop.parentloop.counter %}
-				{{num}}
-				{% endif %}{% endfor %}</td>
+				<td>{% if is_paginated %}
+					{{ page_obj.start_index|add:forloop.counter|add:"-1" }}
+				{% else %}
+					{{ forloop.counter }}
+				{% endif %}</td>
 				<td>
 				{% if student.photo %}
 				<img src="{{ student.photo.url }}" width="30px" height="30px" class="img-circle">
@@ -51,8 +52,12 @@
 				<img src="{% static "img/default_user.jpg" %}" width="30px" height="30px" class="img-circle">
 				{% endif %}
 				</td>
-				<td><a href="{% url "students_edit" student.id %}">{{ student.last_name }}</a></td>
-				<td><a href="{% url "students_edit" student.id %}">{{ student.first_name }}</a></td>
+				<td><a href="{% url "students_edit" student.id %}" 
+					class="student-edit-form-link">{{ student.last_name }}</a>
+				</td>
+				<td><a href="{% url "students_edit" student.id %}" 
+					class="student-edit-form-link">{{ student.first_name }}</a>
+				</td>
 				<td>{{student.ticket}}</td>
 				<td>
 					<div class="btn-group">
@@ -60,8 +65,10 @@
 					    Дія <span class="caret"></span>
 					  </button>
 					  <ul class="dropdown-menu">
-					    <li><a href="{% url "students_edit" student.id %}">Редагувати</a></li>
-					    <li><a href="/journal/{{student.id}}">Відвідування</a></li>
+					    <li><a href="{% url "students_edit" student.id %}" 
+					    	class="student-edit-form-link">Редагувати</a>
+					    </li>
+					    <li><a href="{% url "journal" student.id %}">Відвідування</a></li>
 					    <li><a href="{% url "students_delete" student.id %}">Видалити</a></li>
 					  </ul>
 					</div>
@@ -72,38 +79,22 @@
 	</table>
 
 	{% else %}
-		<p>Нажаль, база студентів пуста </p>
+		<div class="alert alert-warning">
+			Поки немає жодного студента в базі. Будь-ласка,
+			<a href="{% url "students_add" %}">додайте</a> першого.
+			</div>
 	{% endif %}
 	<!-- End student listing -->
 	
 	<!--<a href="{% url 'home' %}?loadmore={{ numb }}"><button id="loadmore" > Загрузить еще </button></a>-->
 
 	<!-- Navigations -->
-	
-
-	{% if students.has_other_pages %}
-	{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
-	<nav>
-	  <ul class="pagination">
-	    <li>
-	      <a href="{% url "home" %}?page=1&amp;order_by={% if order_by == '' %}last_name{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">&laquo;</a>
-	    </li>
-	    {% for p in students.paginator.page_range %}
-	    <li {% if students.number == p %}class="active"{% endif %}>
-	      <a href="{% url "home" %}?page={{ p }}&amp;order_by={% if order_by == '' %}last_name{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">{{ p }}</a>
-	    </li>
-	    {% endfor %}
-	    <li>
-	      <a href="{% url "home" %}?page={{ students.paginator.num_pages }}&amp;order_by={% if order_by == '' %}last_name{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">
-	        &raquo;</a>
-	    </li>
-	  </ul>
-	</nav>
-	{% endwith %}
-	{% endif %}
+{% with object_list=students %}
+  {% include "students/pagination.html" %}
+{% endwith %}
 	<!-- Navigations -->
 
-
+<!--
 	<script type="text/javascript">
 
 		$(document).ready(function(){
@@ -126,4 +117,5 @@
 		});
 		
 	</script>
+-->
 {% endblock content %}

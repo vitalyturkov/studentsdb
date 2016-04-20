@@ -69,6 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'studentsdb.context_processors.students_proc',
+		'students.context_processors.groups_processor',
             ],
         },
     },
@@ -132,6 +133,6 @@ ADMIN_EMAIL = 'admin@studentsdb.com'
 EMAIL_HOST = 'smtp.mandrillapp.com'
 EMAIL_PORT = '587'
 EMAIL_HOST_USER = 'lion955@mail.ru'
-EMAIL_HOST_PASSWORD = 'lion955vlad'
+EMAIL_HOST_PASSWORD = '12345'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

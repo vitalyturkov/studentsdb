@@ -14,17 +14,25 @@ from django.forms import ModelForm
 
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field
+from crispy_forms.layout import Submit, Layout, Field, HTML
+from crispy_forms.bootstrap import FieldWithButtons, StrictButton
 
 import re
 
 from ..models.students import Student
 from ..models.groups import Group
 
+from ..util import paginate, get_current_group
 
 
 def students_list(request):
-	students = Student.objects.all()
+
+	current_group = get_current_group(request)
+	if current_group:
+		students = Student.objects.filter(student_group=current_group)
+	else:
+		# otherwise show all students
+		students = Student.objects.all()
 	# try to order students list
 	order_by = request.GET.get('order_by', 'last_name')
 	if order_by in ('last_name', 'first_name', 'ticket'):
@@ -33,21 +41,9 @@ def students_list(request):
 			students = students.reverse()
 
 	n = 5
-	paginator = Paginator(students, n)
-	page = request.GET.get('page', '1')
-	try:
-		students = paginator.page(page)
-	except PageNotAnInteger:
-		# If page is not an integer, deliver first page.
-		students = paginator.page(1)
-	except EmptyPage:
-		# If page is out of range (e.g. 9999), deliver last page of results.
-		students = paginator.page(paginator.num_pages)
-
-
-	numbs=[]
-	for i in range(n):
-		numbs.append((int(page)-1)*n+i+1)
+	# apply pagination, 5 students per page
+	context = paginate(students, n, request, {},
+		var_name='students')
 
 	"""	
 	pag = request.GET.get('page', '1')
@@ -59,20 +55,23 @@ def students_list(request):
 	"""
 
 	return render(request, 'students/students_list.html',
-		{'students': students, 'numbs': numbs})
+		context)
 
 
 class StudentForm(ModelForm):
 	class Meta:
 		model = Student
 		fields = ['first_name', 'last_name', 'middle_name', 'birthday', 'photo', 'ticket', 'student_group', 'notes']
+	
 	def __init__(self, *args, **kwargs):
 	# call original initializator
 		super(StudentForm, self).__init__(*args, **kwargs)
 		# this helper object allows us to customize form
 		self.helper = FormHelper(self)
 		# form tag attributes
-		
+		#<span class="input-group-addon">
+         #   <span class="glyphicon glyphicon-calendar"></span>
+        #</span>
 		#self.helper.form_action = reverse('students_edit', kwargs={'pk': kwargs['instance'].id})
 		self.helper.form_method = 'POST'
 		self.helper.form_class = 'form-horizontal'
@@ -81,18 +80,22 @@ class StudentForm(ModelForm):
 		#self.helper.html5_required = True
 		self.helper.label_class = 'col-sm-2 control-label'
 		self.helper.field_class = 'col-sm-10'
-
+		#AppendedText('first_name', 'appended text to show')
 		self.helper.layout = Layout(
 			Field('first_name', placeholder=u"Ваше ім'я"),
 			Field('last_name', placeholder=u"Ваше прізвище"),
 			Field('middle_name', placeholder=u"Ваше ім'я по-батькові"),
-			Field('birthday', placeholder=u"Ваш день народження"),
+			FieldWithButtons('birthday', StrictButton('<span class="glyphicon glyphicon-calendar"></span>', id='calend')),
+			#Field('birthday', placeholder=u"Ваш день народження"),
 			Field('photo'),
 			Field('ticket', placeholder=u"Номер Вашого студентського квитка"),
 			Field('student_group'),
 			Field('notes', placeholder=u"Додаткові нотатки")
 			)
 
+		#ordering field 'student_group' at form by tittle
+		self.fields['student_group'].queryset = Group.objects.order_by('tittle')
+		
 		# add buttons
 		self.helper.add_input(Submit('add_button', u'Зберегти', css_class="btn btn-primary"))
 		self.helper.add_input(Submit('cancel_button', u'Скасувати', css_class="btn btn-link"))
@@ -128,16 +131,24 @@ class StudentUpdateView(UpdateView):
 	def get_success_url(self):
 		return reverse('home')
 
+
 	def post(self, request, *args, **kwargs):
+		form = self.form_class(request.POST)
+
 		if request.POST.get('cancel_button'):
 			messages.info(request, u'Редагування студента скасовано!')
 			return HttpResponseRedirect(reverse('home'))
 		else:
-			if StudentForm(request.POST).is_valid():
+			if form.is_valid():
+				group = Group.objects.filter(leader=kwargs['pk'])
+			
+				if len(group) > 0 and group[0] != Group.objects.get(id=request.POST.get('student_group')):
+					messages.warning(request, u'Студент є старостою іншої групи!')
+					form.add_error('student_group', 'Група не може бути зміненою')
+					return render(request, self.template_name, {'form': form})
 				messages.success(request, u'Редагування студента пройшло успішно!')
 			else:
 				messages.warning(request, u'Будь-ласка, виправте наступні помилки!')
-
 			return super(StudentUpdateView, self).post(request, *args, **kwargs)
 		
 class StudentDeleteView(DeleteView):
@@ -155,6 +166,8 @@ class StudentDeleteView(DeleteView):
 			return super(StudentDeleteView, self).post(request, *args, **kwargs)
 
 
+
+#its part of code just at list and Django doesnt work with it
 def students_add(request):
 	# was form posted?
 	if request.method == "POST":
@@ -244,4 +257,3 @@ def students_add(request):
 		# initial form render
 		return render(request, 'students/students_add.html',
 			{'groups': Group.objects.all().order_by('tittle')})
-

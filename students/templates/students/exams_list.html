@@ -52,9 +52,12 @@
 			<tbody>
 			{% for exam in exams %}
 				<tr>
-					<td>{% for num in numbs %}{% if forloop.counter == forloop.parentloop.counter %}
-				{{num}}
-				{% endif %}{% endfor %}</td>
+					<td>{% if is_paginated %}
+							{{ page_obj.start_index|add:forloop.counter|add:"-1" }}
+						{% else %}
+							{{ forloop.counter }}
+						{% endif %}
+					</td>
 					<td><a href="{% url "exams_edit" exam.id %}">{{exam.tittle}}</a></td>
 					<td>{{exam.examtime}}</td>
 					<td>{{exam.teach}}</td>
@@ -78,32 +81,23 @@
 			</tbody>
 		</table>
 
+	{% else %}
+	<div class="alert alert-warning">
+		Поки немає жодного іспиту в базі. Будь-ласка,
+		<a href="{% url "exams_add" %}">додайте</a> перший.
+	</div>
 
-		<!-- Navigations -->
-
-	{% if exams.has_other_pages %}
-	{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
-	<nav>
-	  <ul class="pagination">
-	    <li>
-	      <a href="{% url "exams" %}?page=1&amp;order_by={% if order_by == '' %}tittle{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">&laquo;</a>
-	    </li>
-	    {% for p in exams.paginator.page_range %}
-	    <li {% if exams.number == p %}class="active"{% endif %}>
-	      <a href="{% url "exams" %}?page={{ p }}&amp;order_by={% if order_by == '' %}tittle{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">{{ p }}</a>
-	    </li>
-	    {% endfor %}
-	    <li>
-	      <a href="{% url "exams" %}?page={{ exams.paginator.num_pages }}&amp;order_by={% if order_by == '' %}tittle{% else %}{{ order_by }}{% endif %}{% if reverse %}&amp;reverse={{ reverse }}{% endif %}">
-	        &raquo;</a>
-	    </li>
-	  </ul>
-	</nav>
-	{% endwith %}
 	{% endif %}
+
+
+	<!-- Navigations -->
+{% with object_list=exams %}
+  {% include "students/pagination.html" %}
+{% endwith %}
+
 	<!-- Navigations -->
 		
 
-	{% endif %}
+
 
 {% endblock content %}
