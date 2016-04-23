@@ -64,7 +64,7 @@ def exams_add(request):
 			if not teach:
 				errors['teach'] = u"Викладач є обов'язковим полем"
 			else:
-				data['teach'] = tittle
+				data['teach'] = teach
 
 			exam_group = request.POST.get('exam_group', '').strip()
 			if not exam_group:

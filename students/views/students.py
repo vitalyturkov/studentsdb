@@ -40,18 +40,20 @@ def students_list(request):
 		if request.GET.get('reverse', '') == '1':
 			students = students.reverse()
 
+
+	
+
+
+	
 	n = 5
 	# apply pagination, 5 students per page
 	context = paginate(students, n, request, {},
 		var_name='students')
-
+	
 	"""	
-	pag = request.GET.get('page', '1')
-	if pag == '1':
-		students_sort = students_sort.all()[0:5]
+	n = request.GET.get('page', '1')
 
-	if pag == '2':
-		students_sort = students_sort.all()[5:10]
+	students = students[0:int(n)*5]
 	"""
 
 	return render(request, 'students/students_list.html',
@@ -80,15 +82,15 @@ class StudentForm(ModelForm):
 		#self.helper.html5_required = True
 		self.helper.label_class = 'col-sm-2 control-label'
 		self.helper.field_class = 'col-sm-10'
-		#AppendedText('first_name', 'appended text to show')
+
 		self.helper.layout = Layout(
-			Field('first_name', placeholder=u"Ваше ім'я"),
-			Field('last_name', placeholder=u"Ваше прізвище"),
-			Field('middle_name', placeholder=u"Ваше ім'я по-батькові"),
+			Field('first_name', placeholder=u"Ім'я студента"),
+			Field('last_name', placeholder=u"Прізвище студента"),
+			Field('middle_name', placeholder=u"Ім'я по-батькові студента"),
 			FieldWithButtons('birthday', StrictButton('<span class="glyphicon glyphicon-calendar"></span>', id='calend')),
 			#Field('birthday', placeholder=u"Ваш день народження"),
 			Field('photo'),
-			Field('ticket', placeholder=u"Номер Вашого студентського квитка"),
+			Field('ticket', placeholder=u"Номер студентського квитка"),
 			Field('student_group'),
 			Field('notes', placeholder=u"Додаткові нотатки")
 			)

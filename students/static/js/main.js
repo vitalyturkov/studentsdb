@@ -1,7 +1,7 @@
 function initJournal() {
-	var indicator = $('#ajax-progress-indicator');
-	var error_indicator = $('#ajax-error-indicator');
-	var ajax_info = $('#ajax-info');
+	var indicator = $('#ajax-progress-indicator'),
+		error_indicator = $('#ajax-error-indicator'),
+		ajax_info = $('#ajax-info');
 
 	$('.day-box input[type="checkbox"]').click(function(event){
 		var box = $(this);
@@ -54,7 +54,7 @@ function initGroupSelector() {
 
 function initDateFields() {
 	//placeholder to "birthday" field
-	$('input#id_birthday').attr("placeholder", "Ваш день народження");
+	$('input#id_birthday').attr("placeholder", "День народження студента");
 
 	$('input.dateinput').datetimepicker({
 	locale: 'ru',
@@ -76,16 +76,32 @@ function initDateFields() {
 }
 
 
+//Edit students
+function initAdd_EditPage() {
+	$('a.student-edit-form-link, a#addButton, a.group-edit-form-link,\
+		a.exam-edit-form-link, a#contact').click(function(event){
 
-function initEditStudentPage() {
-	$('a.student-edit-form-link').click(function(event){
-		var link = $(this);
-		var url = link.attr('href');
+		var link = $(this), url = link.attr('href'),
+			loading = $('.cssload-container');
+
 		$.ajax({
 			'url': url,
 			'dataType': 'html',
 			'type': 'get',
+
+			'beforeSend': function(xhr, settings){
+				loading.show();
+				$('a').attr('onclick', 'return false');
+			},
+
 			'success': function(data, status, xhr){
+				//save actions to browser history
+				history.pushState({ path: url }, '', url);
+				history.replaceState({ path: window.location.href }, '');
+				
+
+				$('a').removeAttr('onclick', 'return false');
+				loading.hide();
 				// check if we got successfull response from the server
 				if (status != 'success') {
 					alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
@@ -94,18 +110,28 @@ function initEditStudentPage() {
 				// update modal window with arrived content from the server
 				var modal = $('#myModal'), html = $(data),
 					form = html.find('#content-column form');
-					console.log(html.text());
+
 				modal.find('.modal-title').html(html.find('#content-column h2').text());
 				modal.find('.modal-body').html(form);
+				showPhotoAtForm();
+			
+
 				// init our edit form
-				initEditStudentForm(form, modal, url);
+				initAdd_EditForm(form, modal, url);
 				// setup and show modal window finally
 				modal.modal({
 					'keyboard': false,
 					'show': true
-				});
+				});	
+
 			},
+
 			'error': function(){
+				$('a').removeAttr('onclick', 'return false');
+				//remove old alert
+				$('.alert').remove();
+				loading.hide();
+	
 				alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
 				return false;
 			}
@@ -115,56 +141,312 @@ function initEditStudentPage() {
 	});
 }
 
-function initEditStudentForm(form, modal, url) {
+function initAdd_EditForm(form, modal, url) {
+	var loading = $('.cssload-container');
 	// attach datepicker
 	initDateFields();
-
-	// close modal window on Cancel button click
-	form.find('input[name="cancel_button"]').click(function(event){
-		modal.modal('hide');
-		return false;
-	});
 
 	// make form work in AJAX mode
 	form.ajaxForm({
 		'url': url,
 		'dataType': 'html',
-		'error': function(){
-			alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
-			return false;
+
+		'beforeSend': function(xhr, settings){
+			loading.show();
+			$('input, textarea, select').attr('disabled', '1');	
 		},
+
 		'success': function(data, status, xhr) {
 
+			$('input, textarea, select').removeAttr('disabled');
+			loading.hide();
 			var html = $(data), newform = html.find('#content-column form');
-			console.log(html.text());
+
+			//remove old alert
+			$('.alert').remove();
+
+			// close modal window on Cancel button click
+			form.find('input[name="cancel_button"]').click(function(event){
+				modal.modal('hide');
+				$('.alert').html(html.find('.alert'));
+				return false;
+			});
 
 			// copy alert to modal window
-			modal.find('.modal-body').html(html.find('.alert'));
 			// copy form to modal if we found it in server response
-
 			if (newform.length > 0) {
+				modal.find('.modal-body').html(html.find('.alert'));
 				modal.find('.modal-body').append(newform);
 				// initialize form fields and buttons
-				initEditStudentForm(newform, modal, url);
+				initAdd_EditForm(newform, modal, url);
 			} else {
-				// if no form, it means success and we need to reload page
-				// to get updated students list;
-				// reload after 1 seconds, so that user can read
-				// success message
-				console.log(html);
-				//show();
-				setTimeout(function(){modal.modal('hide');}, 1000);
-				
+				//setTimeout(function(){modal.modal('hide');}, 1000);
 
+				//hide modal window
+				modal.modal('hide');
+				//give info about successful or unsuccessful operation
+				$('.alert').html(html.find('.alert'));
+				//Up to date list of students
+
+				$('#content-column').hide().html(html.find('#content-column')).fadeIn('slow');;
+				$('#global-navigation').hide().html(html.find('#global-navigation')).fadeIn('slow');;
+
+				initAdd_EditPage();
+				globalNavigation();
+				loadMore();
+				return false;
 			}
+		},
+
+		'error': function(){		
+			//remove old alert
+			$('.alert').remove();
+			loading.hide();
+			modal.modal('hide');
+
+			alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+			return false;
 		}
 	});
 }
+
+
+//Navigation at site
+function globalNavigation() {
+	$('a#students, a#visiting, a#groups, a#exams, a#month, a#pagination, a#ordering').click(function(){
+		var link = $(this), url = link.attr('href'),
+			loading = $('.cssload-container');
+
+		$.ajax({
+			'url': url,
+			'dataType': 'html',
+			'type': 'get',
+
+			'beforeSend': function(xhr, settings){
+				loading.show();
+				$('a').attr('onclick', 'return false');
+			},
+
+			'success': function(data, status, xhr){
+				//save actions to browser history
+				history.pushState({ path: url }, '', url);
+				history.replaceState({ path: window.location.href }, '');
+
+				$('a').removeAttr('onclick', 'return false');
+				loading.hide();
+				// check if we got successfull response from the server
+				if (status != 'success') {
+					alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+					return false;
+				}
+				// update modal window with arrived content from the server
+				var html = $(data);
+
+				
+				if (url === "/" || url === "/journal/" || url === "/groups/" || url === "/exams/"){
+
+					$('#content-column').hide().html(html.find('#content-column')).fadeIn('slow');
+					$('#global-navigation').html(html.find('#global-navigation'));
+
+				} else {
+					$('p#journal-nav').hide().html(html.find('p#journal-nav')).fadeIn('slow');
+					$('table.table').hide().html(html.find('table.table')).fadeIn('slow');
+					$('ul.pagination').hide().html(html.find('ul.pagination')).fadeIn('slow');
+				}
+
+				globalNavigation();
+				initAdd_EditPage();
+				initJournal();
+				loadMore();
+			},
+
+			'error': function(){
+				$('a').removeAttr('onclick', 'return false');
+				//remove old alert
+				$('.alert').remove();
+				loading.hide();
+	
+				alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+				return false;
+			}
+		});
+
+		return false;
+		
+	});
+}
+
+function historyBackButton() {
+
+	$(window).bind('popstate', function(event) {
+		// if the event has our history data on it, load the page fragment with AJAX
+		var state = event.originalEvent.state, loading = $('.cssload-container'),
+			url = location.pathname+location.search;
+
+
+		//console.log(load(state.path));
+		if (state) {
+			//$('div.container').load(location.href);
+		$.ajax({
+			'url': url,
+			'dataType': 'html',
+			'type': 'get',
+
+			'beforeSend': function(xhr, settings){
+				loading.show();
+				$('a').attr('onclick', 'return false');
+			},
+
+			'success': function(data, status, xhr){
+				//console.log(url);
+				//save actions to browser history
+
+				$('a').removeAttr('onclick', 'return false');
+				loading.hide();
+				// check if we got successfull response from the server
+				if (status != 'success') {
+					alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+					return false;
+				}
+				// update modal window with arrived content from the server
+				var html = $(data),  modal = html.find('#myModal');
+
+				//modal.modal('hide');
+				$('#myModal').modal('hide')
+				$('#content-column').hide().html(html.find('#content-column')).fadeIn('slow');
+				$('#global-navigation').html(html.find('#global-navigation'));
+
+				globalNavigation();
+				initAdd_EditPage();
+				initJournal();
+				loadMore();
+			},
+
+			'error': function(){
+				$('a').removeAttr('onclick', 'return false');
+				//remove old alert
+				$('.alert').remove();
+				loading.hide();
+	
+				alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+				return false;
+			}
+		});
+
+		return false;
+	}
+
+});
+}
+
+function showPhotoAtForm(){
+
+	//show current photo at edit form
+	var src = $('#div_id_photo a').attr('href')
+	$('#div_id_photo a').html("<img>");
+	$('#div_id_photo img').attr("src", src)
+		.attr("width", "30px").attr("height", "30px").attr('class', 'img-circle');
+
+	//show new download photo at add and edut form
+	$("input#id_photo").after('<img id="formImage">');
+
+	$("input#id_photo").change(function(){
+
+    if (this.files && this.files[0]) {
+
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+        	$("img#formImage").html('<img id="formImage">')
+        	
+            $('#formImage').attr('src', event.target.result)
+            	.attr("width", "30px").attr("height", "30px").attr('class', 'img-circle');
+        };
+
+        reader.readAsDataURL(this.files[0]);
+    }
+
+	});
+
+}
+
 
 $(document).ready(function(){
 	
 	initGroupSelector();
 	initJournal();
 	initDateFields();
-	initEditStudentPage();
+	initAdd_EditPage();
+	globalNavigation();
+	historyBackButton();
+	showPhotoAtForm();
+
 });
+
+
+
+/*
+!!! Realised page with 'load more...' button !!!
+
+function loadMore() {
+	//$('a#loadMore').attr('href', '?page=1')
+	var n = 1;
+	
+	$('a#loadMore').click(function(){
+		n++;
+		$('a#loadMore').attr('href', '/?page='+n);
+		var link = $(this), url = link.attr('href'),
+			loading = $('.cssload-container');
+
+		$.ajax({
+			'url': url,
+			'dataType': 'html',
+			'type': 'get',
+
+			'beforeSend': function(xhr, settings){
+				loading.show();
+				$('a').attr('onclick', 'return false');
+			},
+
+			'success': function(data, status, xhr){
+				//save actions to browser history
+				history.pushState({ path: url }, '', url);
+				history.replaceState({ path: window.location.href }, '');
+
+				$('a').removeAttr('onclick', 'return false');
+				loading.hide();
+				// check if we got successfull response from the server
+				if (status != 'success') {
+					alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+					return false;
+				}
+				// update modal window with arrived content from the server
+				var html = $(data);
+
+
+					$('table.table').hide().html(html.find('table.table')).fadeIn('slow');
+
+				
+
+				globalNavigation();
+				initAdd_EditPage();
+				initJournal();
+			},
+
+			'error': function(){
+				$('a').removeAttr('onclick', 'return false');
+				//remove old alert
+				$('.alert').remove();
+				loading.hide();
+	
+				alert('Помилка на сервері. Спробуйте будь-ласка пізніше.');
+				return false;
+			}
+		});
+
+
+		return false;
+		
+	});
+}
+*/

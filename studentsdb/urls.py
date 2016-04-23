@@ -43,7 +43,9 @@ urlpatterns = [
 	name='groups_delete'),
 	
     #journal urls
-    url(r'^journal/(?P<pk>\d+)?/?$', JournalView.as_view(), name='journal'),
+    url(r'^journal/$', JournalView.as_view(), name='journal'),
+    url(r'^journal/stud_(?P<spk>\d+)?/?$', JournalView.as_view(), name='stud_journal'),
+    url(r'^journal/group_(?P<gpk>\d+)?/?$', JournalView.as_view(), name='group_journal'),
 
 
     #exams

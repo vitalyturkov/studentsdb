@@ -6,7 +6,7 @@
 
 {% block content %}
 
-	<a href="{% url "exams_add" %}" class="btn btn-primary">Додати Іспит</a>
+	<a href="{% url "exams_add" %}" class="btn btn-primary" id="addButton">Додати Іспит</a>
 
 	{% if exams %}
 		<!-- Start exam listing -->
@@ -17,7 +17,7 @@
 				<tr>
 					<th>#</th>
 					<th>
-						<a href="{% url 'exams' %}?order_by=tittle{% if order_by == 'tittle' and reverse != '1' %}&amp;reverse=1{% endif %}">
+						<a href="{% url 'exams' %}?order_by=tittle{% if order_by == 'tittle' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 						Назва предмету
 						{% if order_by == 'tittle' and reverse != '1' %}&uarr;
 						{% elif order_by == 'tittle' and reverse == '1' %}&darr;
@@ -25,21 +25,21 @@
 						</a>
 					</th>
 					<th>
-						<a href="{% url 'exams' %}?order_by=examtime{% if order_by == 'examtime' and reverse != '1' %}&amp;reverse=1{% endif %}">
+						<a href="{% url 'exams' %}?order_by=examtime{% if order_by == 'examtime' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 						Дата і час проведення
 						{% if order_by == 'examtime' and reverse != '1' %}&uarr;
 						{% elif order_by == 'examtime' and reverse == '1' %}&darr;
 						{% endif %}</a>
 					</th>
 					<th>
-						<a href="{% url 'exams' %}?order_by=teach{% if order_by == 'teach' and reverse != '1' %}&amp;reverse=1{% endif %}">
+						<a href="{% url 'exams' %}?order_by=teach{% if order_by == 'teach' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 						Викладач
 						{% if order_by == 'teach' and reverse != '1' %}&uarr;
 						{% elif order_by == 'teach' and reverse == '1' %}&darr;
 						{% endif %}</a>
 					</th>
 					<th>
-						<a href="{% url 'exams' %}?order_by=exam_group{% if order_by == 'exam_group' and reverse != '1' %}&amp;reverse=1{% endif %}">
+						<a href="{% url 'exams' %}?order_by=exam_group{% if order_by == 'exam_group' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 						Група
 						{% if order_by == 'exam_group' and reverse != '1' %}&uarr;
 						{% elif order_by == 'exam_group' and reverse == '1' %}&darr;
@@ -58,10 +58,12 @@
 							{{ forloop.counter }}
 						{% endif %}
 					</td>
-					<td><a href="{% url "exams_edit" exam.id %}">{{exam.tittle}}</a></td>
+					<td><a href="{% url "exams_edit" exam.id %}" 
+						class="exam-edit-form-link">{{exam.tittle}}</a></td>
 					<td>{{exam.examtime}}</td>
 					<td>{{exam.teach}}</td>
-					<td><a href="{% url "groups_edit" exam.exam_group.id %}">{{exam.exam_group}}</a></td>
+					<td><a href="{% url "groups_edit" exam.exam_group.id %}" 
+						class="group-edit-form-link">{{exam.exam_group}}</a></td>
 					<td>
 						<div class="btn-group">
 						  <button type="button" class="btn btn-default dropdown-toggle"
@@ -70,7 +72,8 @@
 						   <span class="caret"></span>
 						  </button>
 						  <ul class="dropdown-menu">
-						    <li><a href="{% url "exams_edit" exam.id %}">Редагувати</a></li>
+						    <li><a href="{% url "exams_edit" exam.id %}" 
+						    	class="exam-edit-form-link">Редагувати</a></li>
 						    <li><a href="{% url "exams_delete" exam.id %}">Видалити</a></li>
 						  </ul>
 						</div>
@@ -91,7 +94,7 @@
 
 
 	<!-- Navigations -->
-{% with object_list=exams %}
+{% with object_list=exams indicator="exams" %}
   {% include "students/pagination.html" %}
 {% endwith %}
 

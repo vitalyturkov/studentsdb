@@ -9,6 +9,7 @@ from django.http import JsonResponse
 
 from ..models.monthjournal import MonthJournal
 from ..models.students import Student
+from ..models.groups import Group
 
 from ..util import paginate, get_current_group
 
@@ -54,10 +55,21 @@ class JournalView(TemplateView):
 		# get all students from database, or just one if we need to
         # display journal for one student; also check if we need to
         # filter by group
-		if current_group:
+		
+		if kwargs.get('spk'):
+			queryset = [Student.objects.get(pk=kwargs['spk'])]
+			print "SPK - ",queryset
+
+		elif kwargs.get('gpk'):
+			cur_group = Group.objects.get(pk=kwargs['gpk'])
+			queryset = Student.objects.filter(student_group=cur_group)
+			print "GPK - ",queryset
+
+		elif current_group:
 			queryset = Student.objects.filter(student_group=current_group).order_by('last_name')
-		elif kwargs.get('pk'):
-			queryset = [Student.objects.get(pk=kwargs['pk'])]
+			print "EST Grup - ",queryset
+
+
 		else:
 			# otherwise show all students
 			queryset = Student.objects.all().order_by('last_name')
@@ -98,6 +110,7 @@ class JournalView(TemplateView):
 		# finally return updated context
 		# with paginated students
 		return context
+
 	def post(self, request, *args, **kwargs):
 		data = request.POST
 		# prepare student, dates and presence data

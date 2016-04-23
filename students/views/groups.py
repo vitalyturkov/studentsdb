@@ -19,8 +19,6 @@ from ..models.students import Student
 
 from ..util import paginate, get_current_group
 
-from django.http import Http404
-
 
 def groups_list(request):
   current_group = get_current_group(request)
@@ -97,7 +95,7 @@ class GroupCreateView(CreateView):
     elif request.POST.get('add_button'):
       if form.is_valid():
         if request.POST.get('leader'):
-          messages.warning(request, u'Студент %s не може бути старостою новострореної групи, бо він належить до іншої групи!' %Student.objects.get(id=request.POST.get('leader')))
+          messages.warning(request, u'Студент %s не може бути старостою новострореної групи, так як він належить до іншої групи!' %Student.objects.get(id=request.POST.get('leader')))
           form.add_error('leader', 'Спочатку створіть групу без старости, а потім дадайте до неї студентів')
           return render(request, self.template_name, {'form': form})
         messages.success(request, u'Додавання групи %s пройшло успішно!' %request.POST.get('tittle'))

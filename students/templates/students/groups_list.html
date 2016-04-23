@@ -6,7 +6,7 @@
 
 {% block content %}
 
-	<a href="{% url "groups_add" %}" class="btn btn-primary">Додати Групу</a>
+	<a href="{% url "groups_add" %}" class="btn btn-primary" id="addButton">Додати Групу</a>
 	{% if groups %}
 	<!-- Start student listing -->
 	<table class="table">
@@ -14,13 +14,13 @@
 		<thead>
 			<tr>
 				<th>#</th>
-				<th><a href="{% url 'groups' %}?order_by=tittle{% if order_by == 'tittle' and reverse != '1' %}&amp;reverse=1{% endif %}">
+				<th><a href="{% url 'groups' %}?order_by=tittle{% if order_by == 'tittle' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 					Назва
 					{% if order_by == 'tittle' and reverse != '1' %}&uarr;
 					{% elif order_by == 'tittle' and reverse == '1' %}&darr;
 					{% endif %}</a>
 				</th>
-				<th><a href="{% url 'groups' %}?order_by=leader{% if order_by == 'leader' and reverse != '1' %}&amp;reverse=1{% endif %}">
+				<th><a href="{% url 'groups' %}?order_by=leader{% if order_by == 'leader' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 					Староста 
 					{% if order_by == 'leader' and reverse != '1' %}&uarr;
 					{% elif order_by == 'leader' and reverse == '1' %}&darr;
@@ -39,22 +39,23 @@
 					{{ forloop.counter }}
 				{% endif %}
 			</td>
-				<td><a href="{% url "groups_edit" group.id %}">{{ group.tittle }}</a></td>
-				<td>{% if group.leader %}<a href="{% url "students_edit" group.leader.id %}">{{ group.leader }}</a>{% else %}Немає{% endif %}</td>
+				<td><a href="{% url "groups_edit" group.id %}" class="group-edit-form-link">{{ group.tittle }}</a></td>
+				<td>{% if group.leader %}<a href="{% url "students_edit" group.leader.id %}"
+					class="student-edit-form-link">{{ group.leader }}</a>{% else %}Немає{% endif %}</td>
 				<td>
-						<div class="btn-group">
-						  <button type="button" class="btn btn-default dropdown-toggle"
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
-						   Дія 
-						   <span class="caret"></span>
-						  </button>
-						  <ul class="dropdown-menu">
-						    <li><a href="{% url "groups_edit" group.id %}">Редагувати</a></li>
-						    <li><a href="{% url "journal" %}">Відвідування</a></li>
-						    <li><a href="{% url "groups_delete" group.id %}">Видалити</a></li>
-						  </ul>
-						</div>
-					</td>
+					<div class="btn-group">
+					  <button type="button" class="btn btn-default dropdown-toggle"
+					   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+					   Дія 
+					   <span class="caret"></span>
+					  </button>
+					  <ul class="dropdown-menu">
+					    <li><a href="{% url "groups_edit" group.id %}" class="group-edit-form-link">Редагувати</a></li>
+					    <li><a href="{% url "group_journal"  group.id %}">Відвідування</a></li>
+					    <li><a href="{% url "groups_delete" group.id %}">Видалити</a></li>
+					  </ul>
+					</div>
+				</td>
 				
 			</tr>
 			{% endfor %}
@@ -70,7 +71,7 @@
 	<!-- End student listing -->
 
 	<!-- Navigations -->
-{% with object_list=groups %}
+{% with object_list=groups indicator="groups" %}
   {% include "students/pagination.html" %}
 {% endwith %}
 

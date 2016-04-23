@@ -43,18 +43,18 @@
 				<!-- End Header -->
 				<!-- Start sub-header -->
 				<div class="row" id="sub-header">
-					<div class="col-xs-12">
+					<div class="col-xs-12" id='global-navigation'>
 						<ul class="nav nav-tabs" role="tablist">
 						  <li role="presentation" {% if request.path == "/" or "/students" in request.path  %}
-						  	class="active"{% endif %}><a href="{% url "home" %}">Студенти</a></li>
+						  	class="active"{% endif %}><a href="{% url "home" %}" id="students">Студенти</a></li>
 						  <li role="presentation" {% if "/journal" in request.path %}
-						  	class="active"{% endif %}><a href="{% url "journal" %}">Відвідування</a></li>
+						  	class="active"{% endif %}><a href="{% url "journal" %}" id="visiting">Відвідування</a></li>
 						  <li role="presentation" {% if "/groups" in request.path %}
-						  	class="active"{% endif %}><a href="{% url "groups" %}">Групи</a></li>
+						  	class="active"{% endif %}><a href="{% url "groups" %}" id="groups">Групи</a></li>
 						  <li role="presentation" {% if "/exams" in request.path %}
-						  	class="active"{% endif %}><a href="{% url "exams" %}">Іспити</a></li>
+						  	class="active"{% endif %}><a href="{% url "exams" %}" id="exams">Іспити</a></li>
 						  <li role="presentation" {% if "/contact-admin" in request.path %}
-						  	class="active"{% endif %}><a href="{% url "contact_admin" %}">Контакт</a></li>
+						  	class="active"{% endif %}><a href="{% url "contact_admin" %}" id="contact">Контакт</a></li>
 						</ul>
 					</div>
 				</div>
@@ -87,6 +87,15 @@
 				<!-- End Footer -->
 		</div>
 		<!-- End container -->
+
+
+		<!-- Loading indicator -->
+		<div class="cssload-container">
+			<p id="loading-text">Йде завантаження</p>
+			<div class="cssload-whirlpool"></div>
+		</div>
+		<!-- End loading indicator -->
+
 
 		<!-- Modal Boilerplate -->
 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog"

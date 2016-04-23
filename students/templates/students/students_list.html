@@ -5,7 +5,12 @@
 {% block tittle %}База студентів{% endblock tittle %}
 
 {% block content %}
-	<a href="{% url "students_add" %}" class="btn btn-primary">Додати студента</a>
+	<div class="alert alert-danger" id="ajax-error-indicator">
+		Помилка на сервері. Спробуйте, будь-ласка, пізніше.
+	</div>
+
+
+	<a href="{% url "students_add" %}" class="btn btn-primary" id="addButton">Додати студента</a>
 	{% if students %}
 	<!-- Start student listing -->
 
@@ -15,19 +20,19 @@
 			<tr>
 				<th>#</th>
 				<th>Фото</th>
-				<th><a href="{% url 'home' %}?order_by=last_name{% if order_by == 'last_name' and reverse != '1' %}&amp;reverse=1{% endif %}">
+				<th><a href="{% url 'home' %}?order_by=last_name{% if order_by == 'last_name' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 					Прізвище
 					{% if order_by == 'last_name' and reverse != '1' %}&uarr;
 					{% elif order_by == 'last_name' and reverse == '1' %}&darr;
 					{% endif %}</a>
 				</th>
-				<th><a href="{% url 'home' %}?order_by=first_name{% if order_by == 'first_name' and reverse != '1' %}&amp;reverse=1{% endif %}">
+				<th><a href="{% url 'home' %}?order_by=first_name{% if order_by == 'first_name' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 					Ім'я
 					{% if order_by == 'first_name' and reverse != '1' %}&uarr;
 					{% elif order_by == 'first_name' and reverse == '1' %}&darr;
 					{% endif %}</a>
 				</th>
-				<th><a href="{% url 'home' %}?order_by=ticket{% if order_by == 'ticket' and reverse != '1' %}&amp;reverse=1{% endif %}">
+				<th><a href="{% url 'home' %}?order_by=ticket{% if order_by == 'ticket' and reverse != '1' %}&amp;reverse=1{% endif %}" id="ordering">
 					№ білету
 					{% if order_by == 'ticket' and reverse != '1' %}&uarr;
 					{% elif order_by == 'ticket' and reverse == '1' %}&darr;
@@ -61,14 +66,15 @@
 				<td>{{student.ticket}}</td>
 				<td>
 					<div class="btn-group">
-					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" 
+					  	aria-haspopup="true" aria-expanded="false">
 					    Дія <span class="caret"></span>
 					  </button>
 					  <ul class="dropdown-menu">
 					    <li><a href="{% url "students_edit" student.id %}" 
 					    	class="student-edit-form-link">Редагувати</a>
 					    </li>
-					    <li><a href="{% url "journal" student.id %}">Відвідування</a></li>
+					    <li><a href="{% url "stud_journal" student.id %}">Відвідування</a></li>
 					    <li><a href="{% url "students_delete" student.id %}">Видалити</a></li>
 					  </ul>
 					</div>
@@ -85,12 +91,14 @@
 			</div>
 	{% endif %}
 	<!-- End student listing -->
-	
-	<!--<a href="{% url 'home' %}?loadmore={{ numb }}"><button id="loadmore" > Загрузить еще </button></a>-->
 
 	<!-- Navigations -->
-{% with object_list=students %}
+
+
+{% with object_list=students indicator="students" %}
+
   {% include "students/pagination.html" %}
+
 {% endwith %}
 	<!-- Navigations -->
 
